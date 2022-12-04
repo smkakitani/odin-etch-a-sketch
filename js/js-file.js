@@ -20,7 +20,7 @@ function createGrid() {
         for (let i = 0; i < columns; i++) {
             const divsInside = document.createElement('div');
             divsInside.classList.add('grid-in');
-            //divsInside.style.backgroundColor = 'white';
+            //divsInside.style.backgroundColor = '';
             //divsInside.style.border = '1px solid #8a8a8a';
             //divsInside.style.display = 'flex';
             //divsInside.style.flex = '1 1 0';
@@ -33,23 +33,45 @@ createGrid();
 
 
 // Mouse hover event
-
-function eventForEach(element) {
-    element.addEventListener('mouseover', mouseOver)
+    //Painting black
+function eventForBlack(element) {
+    element.addEventListener('mouseover', mouseOverBlack);
+    element.removeEventListener('mouseover', mouseOverRain);//remove the other event
 }
 
-function mouseOver() {
-    this.style.backgroundColor = 'black';
-    //console.log(this);
+function mouseOverBlack() {
+    this.style.backgroundColor = "black";
+    console.log('black');
 }
 
-const colorGrid = document.querySelectorAll('.grid-in');
-colorGrid.forEach(eventForEach);
+
+    //Painting Rainbow
+function eventForRainbow(colorOver) {
+    colorOver.addEventListener('mouseover', mouseOverRain);
+    colorOver.removeEventListener('mouseover', mouseOverBlack);//remove the other event
+}
+
+function mouseOverRain() {
+    const rainColors = ['#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#a200ff', '#ff0080'];
+    let randColors = rainColors[Math.floor(Math.random() * rainColors.length)];
+
+    this.style.backgroundColor = randColors;
+    console.log('rainbow');
+}
+
+function paintGrid(event) {
+    const gridClass = document.querySelectorAll('.grid-in');
+    // console.log(event.currentTarget.className);
+    if (event.currentTarget.className === "button-black") {
+        gridClass.forEach(eventForBlack);
+    } else if (event.currentTarget.className === "button-rainbow") {
+        gridClass.forEach(eventForRainbow);
+    }
+} 
 
 
 
-//Button for setting the grid
-
+//Grid size
 function showInputValue() {
     let inputValue = document.querySelector('#slider-range').value;
     document.querySelector('.slider-progress').textContent = `${inputValue} x ${inputValue}`;
@@ -57,26 +79,35 @@ function showInputValue() {
     return inputValue;
 }
 
-let inputValue = "";
-//let sliderProgress = document.querySelector('.slider-progress').textContent = `${inputValue} x ${inputValue}`
-console.log(inputValue);
+
+
+//Resetting the grid
+function removeElement(ele) {
+    ele.remove('grid-in', 'grid-column');
+}
+
+function resetGrid() {
+    let selectGrids = document.querySelectorAll('.grid-in, .grid-column');    
+    selectGrids.forEach(removeElement);
+    // console.log(selectGrids);
+
+    let rows = document.querySelector('#slider-range').value;
+    let columns = rows;
+    createGrid();
+}
+
+
+
+//Buttons - events listeners
 
 const inputRange = document.querySelector('#slider-range');
 inputRange.addEventListener('click', showInputValue);
 
+const buttonReset = document.querySelector('.button-reset');
+buttonReset.addEventListener('click', resetGrid);
 
+const buttonBlack = document.querySelector('.button-black');
+buttonBlack.addEventListener('click', paintGrid);
 
-//Resetting the grid
-
-function clearGrid() {
-    colorGrid.style.backgroundColor = 'white';
-}
-
-function resetGrid() {
-    colorGrid.forEach(clearGrid);
-    console.log(colorGrid);
-}
-
-const resetting = document.querySelector('grid-column');
-const resetButton = document.querySelector('.button-reset');
-resetButton.addEventListener('click', resetGrid);
+const buttonRain = document.querySelector('.button-rainbow');
+buttonRain.addEventListener('click', paintGrid);
